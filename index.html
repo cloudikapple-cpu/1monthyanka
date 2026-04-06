@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Для моей любимой Яночки</title>
+    <!-- Подключаем библиотеку для конфетти -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Quicksand:wght@500;600;700&family=Libre+Barcode+39+Text&display=swap');
 
         :root {
             --bg-light: #fff0f3;        
@@ -14,368 +17,255 @@
             --pink-main: #ff8fab;       
             --pink-dark: #fb6f92;       
             --pink-deep: #c9184a;       
-            --text-main: #4a0a1c;       
+            --text-main: #590d22;       
             --white: #ffffff;
-            --shadow: 0 15px 35px rgba(201, 24, 74, 0.12); 
-            --glow: 0 0 20px rgba(251, 111, 146, 0.4);
+            --shadow: 0 10px 30px rgba(251, 111, 146, 0.2); 
             --radius: 24px;
         }
 
-        /* Кастомный розовый скроллбар */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-light); }
         ::-webkit-scrollbar-thumb { background: var(--pink-main); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--pink-deep); }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
 
-        /* 1. Живой дышащий фон */
         body {
-            font-family: 'Quicksand', sans-serif;
-            font-weight: 600; 
-            background: linear-gradient(-45deg, #fff0f3, #ffe5ec, #ffc2d1, #fff0f3);
-            background-size: 400% 400%;
-            animation: breatheBG 15s ease infinite;
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.8; /* Больше воздуха в тексте */
-            position: relative;
-        }
-        @keyframes breatheBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            font-family: 'Quicksand', sans-serif; font-weight: 600; 
+            background-color: var(--bg-light);
+            background-image: linear-gradient(135deg, var(--bg-light) 0%, var(--pink-lightest) 100%);
+            color: var(--text-main); overflow-x: hidden; line-height: 1.6;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%23c9184a"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 14 14, auto;
         }
 
-        /* 5. Эффект Боке на фоне (размытые круги) */
-        .bokeh {
-            position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: 0; pointer-events: none;
-        }
-        .bokeh-1 { width: 300px; height: 300px; background: var(--pink-main); top: -50px; left: -50px; animation: floatBokeh 20s infinite alternate; }
-        .bokeh-2 { width: 400px; height: 400px; background: var(--pink-pastel); bottom: -100px; right: -50px; animation: floatBokeh 25s infinite alternate-reverse; }
-        .bokeh-3 { width: 250px; height: 250px; background: var(--pink-lightest); top: 40%; left: 40%; animation: floatBokeh 22s infinite alternate; }
-        
-        @keyframes floatBokeh {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(60px, 60px) scale(1.2); }
-        }
+        /* Прелоадер */
+        #preloader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-light); z-index: 99999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s ease, visibility 0.8s ease; }
 
-        h1, h2, h3 {
-            font-family: 'Dancing Script', cursive;
-            font-weight: 700;
-            color: var(--pink-deep);
-            text-align: center;
-            text-shadow: 1px 1px 3px rgba(201, 24, 74, 0.15); /* Эффект чернил */
+        /* ЭКРАН С ПАРОЛЕМ */
+        #password-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-light); z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1s, visibility 1s; padding: 20px; text-align: center;
+            background-image: radial-gradient(var(--pink-lightest) 2px, transparent 2px); background-size: 30px 30px;
         }
+        .pass-box { background: rgba(255,255,255,0.9); padding: 50px 30px; border-radius: 30px; box-shadow: var(--shadow); border: 3px solid var(--pink-pastel); max-width: 450px; width: 100%; backdrop-filter: blur(10px);}
+        .pass-box h2 { font-size: 3rem; margin-bottom: 15px; }
+        .pass-box p { font-size: 1.2rem; margin-bottom: 25px; }
+        .pass-input { width: 100%; padding: 15px; font-size: 1.2rem; border: 2px solid var(--pink-main); border-radius: 15px; text-align: center; font-family: 'Quicksand'; outline: none; margin-bottom: 20px;}
+        .pass-input:focus { border-color: var(--pink-deep); }
+        .pass-btn { background: var(--pink-dark); color: white; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 20px; cursor: pointer; transition: 0.3s; font-family: 'Quicksand', font-weight: 700; width: 100%;}
+        .pass-btn:hover { background: var(--pink-deep); transform: scale(1.05); }
+        .pass-error { color: var(--pink-deep); margin-top: 15px; font-weight: 700; opacity: 0; transition: 0.3s; height: 20px;}
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
 
-        h2 { font-size: 4rem; margin-bottom: 40px; }
+        h1, h2, h3 { font-family: 'Dancing Script', cursive; font-weight: 700; color: var(--pink-deep); text-align: center; }
+        h2 { font-size: 3.8rem; margin-bottom: 40px; text-shadow: 1px 1px 3px rgba(251, 111, 146, 0.15); }
+        section { min-height: 100vh; padding: 80px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; }
 
-        section {
-            min-height: 100vh; padding: 80px 20px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; position: relative; z-index: 10;
-        }
-
-        /* Падающие сердечки */
-        #hearts-container {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 1; overflow: hidden; display: none;
-        }
-        .falling-heart {
-            position: absolute; top: -10vh; color: var(--pink-main);
-            font-size: 20px; opacity: 0.6; animation: fall linear forwards;
-        }
+        #hearts-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; display: none; }
+        .falling-heart { position: absolute; top: -10vh; color: var(--pink-main); font-size: 20px; opacity: 0.6; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
 
-        /* Плавное появление элементов */
-        .hidden-el {
-            opacity: 0; transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .hidden-el { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
         .show-el { opacity: 1; transform: translateY(0); }
 
-        /* 2. Эффект реалистичного Полароида с зумом */
-        .polaroid {
-            background: var(--white);
-            padding: 12px 12px 40px 12px;
-            box-shadow: var(--shadow);
-            border-radius: 4px;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s;
-            border: 1px solid rgba(255,194,209, 0.3);
-            position: relative;
-        }
-        .polaroid-img-wrapper {
-            overflow: hidden; /* Скрываем края при зуме */
-            border-radius: 2px;
-        }
-        .polaroid img {
-            width: 100%; height: 280px; object-fit: cover;
-            display: block; transition: transform 0.6s ease;
-        }
-        .polaroid:hover {
-            transform: scale(1.05) rotate(0deg) !important;
-            box-shadow: 0 25px 50px rgba(201, 24, 74, 0.2);
-            z-index: 20;
-        }
-        .polaroid:hover img {
-            transform: scale(1.06); /* Зум самой картинки внутри рамки */
-        }
+        .polaroid { background: var(--white); padding: 12px 12px 40px 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-radius: 4px; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s; border: 1px solid var(--pink-lightest); position: relative; cursor: pointer; }
+        .polaroid::before { content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg); width: 90px; height: 28px; background: rgba(255, 255, 255, 0.5); box-shadow: 0 1px 3px rgba(0,0,0,0.05); backdrop-filter: blur(2px); z-index: 10; border-radius: 2px; }
+        .polaroid:hover { transform: scale(1.05) rotate(0deg) !important; box-shadow: 0 20px 40px rgba(251, 111, 146, 0.3); z-index: 20; }
+        .polaroid img { width: 100%; height: 280px; object-fit: cover; border-radius: 2px; display: block; }
 
-        /* Кнопки с эффектом свечения */
-        .btn-down {
-            display: inline-flex; align-items: center; justify-content: center;
-            margin-top: auto; text-decoration: none; color: var(--text-main);
-            font-weight: 700; font-size: 1.1rem; background: var(--pink-pastel);
-            padding: 12px 35px; border-radius: 30px; box-shadow: var(--glow);
-            transition: transform 0.3s, background 0.3s, color 0.3s, box-shadow 0.3s;
-            animation: bounce 2s infinite; z-index: 10;
-        }
-        .btn-down:hover { 
-            background: var(--pink-main); color: var(--white); 
-            transform: scale(1.05); box-shadow: 0 0 30px rgba(251, 111, 146, 0.6);
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
+        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(89, 13, 34, 0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(5px); }
+        #lightbox.active { opacity: 1; pointer-events: all; }
+        #lightbox img { max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 50px rgba(0,0,0,0.5); transform: scale(0.8); transition: 0.4s; border: 10px solid white;}
+        #lightbox.active img { transform: scale(1); }
+        .close-lightbox { position: absolute; top: 30px; right: 40px; color: white; font-size: 40px; cursor: pointer; }
 
-        /* --- ЭКРАН 1: КОНВЕРТ --- */
-        #envelope-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(-45deg, #fff0f3, #ffe5ec, #ffc2d1, #fff0f3);
-            background-size: 400% 400%; animation: breatheBG 15s ease infinite;
-            z-index: 100; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; transition: opacity 1s, visibility 1s;
-        }
-        .envelope-wrapper {
-            position: relative; width: 340px; height: 230px;
-            background: var(--pink-main); border-radius: 8px;
-            box-shadow: 0 25px 60px rgba(201, 24, 74, 0.3); margin-bottom: 50px; perspective: 1000px;
-            /* Левитация конверта */
-            animation: levitateEnvelope 4s ease-in-out infinite;
-        }
-        @keyframes levitateEnvelope {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        .envelope-wrapper.open { animation: none; } /* Отключаем левитацию при открытии */
+        .btn-down { display: inline-flex; align-items: center; justify-content: center; margin-top: auto; text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 1.1rem; background: var(--pink-pastel); padding: 12px 35px; border-radius: 30px; box-shadow: var(--shadow); transition: 0.3s; animation: bounce 2s infinite; z-index: 10; }
+        .btn-down:hover { background: var(--pink-main); color: var(--white); transform: scale(1.05); }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 
-        /* Письмо-билет внутри конверта */
-        .envelope-letter {
-            position: absolute; bottom: 10px; left: 15px; right: 15px; height: 190px;
-            background: var(--white); z-index: 2;
+        /* ПЛАВАЮЩАЯ КНОПКА МУЗЫКИ */
+        #music-toggle-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: var(--pink-main); color: white; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            /* Делаем его похожим на купон/билет */
-            -webkit-mask-image: radial-gradient(circle at 0 50%, transparent 15px, black 16px), radial-gradient(circle at 100% 50%, transparent 15px, black 16px);
-            -webkit-mask-size: 51% 100%; -webkit-mask-repeat: no-repeat; -webkit-mask-position: left, right;
-            border: 2px dashed var(--pink-pastel);
+            font-size: 1.8rem; cursor: pointer; box-shadow: var(--shadow);
+            z-index: 999; transition: 0.3s; opacity: 0; visibility: hidden;
+            border: 3px solid var(--white);
         }
-        .envelope-letter-text { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--pink-deep); font-weight: 700; }
-        
-        .envelope-left { position: absolute; top: 0; left: 0; width: 0; height: 0; border-top: 115px solid transparent; border-bottom: 115px solid transparent; border-left: 170px solid var(--pink-main); z-index: 3; }
-        .envelope-right { position: absolute; top: 0; right: 0; width: 0; height: 0; border-top: 115px solid transparent; border-bottom: 115px solid transparent; border-right: 170px solid var(--pink-main); z-index: 3; }
-        .envelope-front { position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 170px solid transparent; border-right: 170px solid transparent; border-bottom: 140px solid var(--pink-pastel); z-index: 4; }
-        .envelope-flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 170px solid transparent; border-right: 170px solid transparent; border-top: 140px solid var(--pink-dark); transform-origin: top; z-index: 5; transition: transform 0.8s ease 0.3s, z-index 0s 0.8s; }
-        .wax-seal {
-            position: absolute; top: 140px; left: 50%; transform: translate(-50%, -50%);
-            width: 55px; height: 55px; background: var(--pink-deep); border-radius: 50%;
-            z-index: 6; display: flex; align-items: center; justify-content: center;
-            color: var(--white); font-size: 24px; box-shadow: 0 5px 15px rgba(201,24,74,0.5), inset 0 0 10px rgba(0,0,0,0.2);
-            border: 2px solid #a4133c; transition: transform 0.4s cubic-bezier(0.6, -0.28, 0.735, 0.045), opacity 0.4s ease;
-        }
-        .wax-seal::after { content: ''; position: absolute; width: 43px; height: 43px; border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; }
+        #music-toggle-btn:hover { background: var(--pink-deep); transform: scale(1.1); }
+        #music-toggle-btn.visible { opacity: 1; visibility: visible; }
+
+        /* Конверт */
+        #envelope-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--bg-light) 0%, var(--pink-lightest) 100%); z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1s, visibility 1s; }
+        .envelope-wrapper { position: relative; width: 320px; height: 220px; background: var(--pink-main); border-radius: 8px; box-shadow: 0 20px 50px rgba(201, 24, 74, 0.25); margin-bottom: 50px; perspective: 1000px; }
+        .envelope-letter { position: absolute; bottom: 10px; left: 15px; right: 15px; height: 190px; background: var(--white); border-radius: 8px; z-index: 2; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .envelope-letter-text { font-family: 'Dancing Script', cursive; font-size: 2.2rem; color: var(--pink-deep); font-weight: 700; }
+        .envelope-left { position: absolute; top: 0; left: 0; width: 0; height: 0; border-top: 110px solid transparent; border-bottom: 110px solid transparent; border-left: 160px solid var(--pink-main); z-index: 3; }
+        .envelope-right { position: absolute; top: 0; right: 0; width: 0; height: 0; border-top: 110px solid transparent; border-bottom: 110px solid transparent; border-right: 160px solid var(--pink-main); z-index: 3; }
+        .envelope-front { position: absolute; bottom: 0; left: 0; width: 0; height: 0; border-left: 160px solid transparent; border-right: 160px solid transparent; border-bottom: 130px solid var(--pink-pastel); z-index: 4; }
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 160px solid transparent; border-right: 160px solid transparent; border-top: 130px solid var(--pink-dark); transform-origin: top; z-index: 5; transition: transform 0.8s ease 0.3s, z-index 0s 0.8s; }
+        .wax-seal { position: absolute; top: 130px; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: var(--pink-deep); border-radius: 50%; z-index: 6; display: flex; align-items: center; justify-content: center; color: var(--white); font-size: 22px; box-shadow: 0 5px 10px rgba(201,24,74,0.4), inset 0 0 8px rgba(0,0,0,0.2); border: 2px solid #a4133c; transition: transform 0.4s, opacity 0.4s; }
+        .wax-seal::after { content: ''; position: absolute; width: 38px; height: 38px; border: 1px dashed rgba(255,255,255,0.4); border-radius: 50%; }
         .envelope-wrapper.open .wax-seal { transform: translate(-50%, -50%) scale(0); opacity: 0; }
         .envelope-wrapper.open .envelope-flap { transform: rotateX(180deg); z-index: 1; }
-        .envelope-wrapper.open .envelope-letter { transform: translateY(-130px); transition-delay: 1.1s; }
-        
-        .btn-open {
-            background: var(--white); color: var(--pink-deep); border: 3px solid var(--pink-pastel);
-            padding: 15px 40px; font-size: 1.3rem; font-family: 'Quicksand', sans-serif; font-weight: 700;
-            border-radius: 30px; cursor: pointer; box-shadow: var(--glow); transition: 0.3s; margin-top: 20px;
-        }
-        .btn-open:hover { transform: scale(1.05); background: var(--pink-deep); color: var(--white); border-color: var(--pink-deep); box-shadow: 0 0 30px rgba(201, 24, 74, 0.6);}
+        .envelope-wrapper.open .envelope-letter { transform: translateY(-110px); transition-delay: 1.1s; }
+        .btn-open { background: var(--white); color: var(--pink-deep); border: 3px solid var(--pink-pastel); padding: 15px 40px; font-size: 1.3rem; font-family: 'Quicksand'; font-weight: 700; border-radius: 30px; cursor: pointer; box-shadow: var(--shadow); transition: 0.3s; margin-top: 20px; }
+        .btn-open:hover { transform: scale(1.05); background: var(--pink-deep); color: var(--white); }
 
-        /* --- ВСТУПЛЕНИЕ --- */
-        .intro-content {
-            display: flex; align-items: center; gap: 50px; max-width: 1000px;
-            background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(15px);
-            padding: 50px; border-radius: var(--radius); box-shadow: var(--shadow);
-            margin-bottom: 40px; border: 1px solid var(--white);
-        }
+        .intro-content { display: flex; align-items: center; gap: 40px; max-width: 900px; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); border: 2px solid var(--pink-lightest); margin-bottom: 40px;}
         .intro-text { flex: 1; font-size: 1.4rem; }
-        .intro-text span { font-family: 'Dancing Script', cursive; font-size: 4.2rem; color: var(--pink-deep); display: block; margin-bottom: 10px; line-height: 1.2; text-shadow: 1px 1px 3px rgba(201, 24, 74, 0.2); }
+        .intro-text span { font-family: 'Dancing Script', cursive; font-size: 3.8rem; color: var(--pink-deep); display: block; margin-bottom: 10px; line-height: 1.2; }
         .intro-photo { flex: 1; transform: rotate(3deg); }
+        .time-counter { background: var(--white); border: 2px dashed var(--pink-main); padding: 15px 25px; border-radius: 15px; margin-top: 20px; font-size: 1.1rem; color: var(--pink-deep); font-weight: 700; text-align: center; }
+        #timer-text { font-family: 'Dancing Script', cursive; font-size: 1.8rem; color: var(--text-main); display: block; margin-top: 5px;}
 
-        /* Счетчик времени */
-        .time-counter {
-            background: var(--white); border: 2px dashed var(--pink-main);
-            padding: 15px 25px; border-radius: 15px; margin-top: 25px;
-            font-size: 1.1rem; color: var(--pink-deep); font-weight: 700; text-align: center;
-            box-shadow: 0 10px 20px rgba(251, 111, 146, 0.1);
-        }
-        #timer-text { font-family: 'Dancing Script', cursive; font-size: 2.2rem; color: var(--text-main); display: block; margin-top: 5px;}
+        /* SPOTIFY ПЛЕЙЛИСТ */
+        .spotify-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; width: 100%; margin-bottom: 40px;}
+        .spotify-card { background: rgba(255,255,255,0.8); padding: 15px; border-radius: 20px; box-shadow: var(--shadow); border: 2px solid var(--pink-lightest); transition: 0.3s;}
+        .spotify-card:hover { transform: translateY(-5px); border-color: var(--pink-main); }
 
-        /* --- НАШИ МОМЕНТЫ --- */
-        .moments-container { display: flex; gap: 40px; max-width: 1100px; width: 100%; justify-content: center; }
-        .moment-wrapper { flex: 1; text-align: center; }
-        .moment-wrapper:nth-child(1) .polaroid { transform: rotate(-3deg); }
-        .moment-wrapper:nth-child(2) .polaroid { transform: rotate(2deg); margin-top: 30px; }
-        .moment-wrapper:nth-child(3) .polaroid { transform: rotate(-2deg); }
-        .moment-text { margin-top: 25px; background: rgba(255,255,255,0.8); padding: 20px; border-radius: 15px; box-shadow: var(--shadow); border: 1px solid var(--white);}
-        .moment-text h3 { font-size: 2.2rem; margin-bottom: 10px; color: var(--pink-dark); }
-        .moment-text p { font-size: 1.1rem; }
+        /* ИНТЕРАКТИВНЫЕ КУПОНЫ */
+        .coupons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 1000px; margin-bottom: 40px;}
+        .scratch-card { position: relative; width: 280px; height: 150px; background: var(--white); border-radius: 15px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--pink-main); overflow: hidden;}
+        .scratch-content { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--pink-deep); text-align: center; padding: 10px; line-height: 1.2; user-select: none;}
+        .scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
 
-        /* --- ПРИЧИНЫ ЛЮБВИ --- */
-        .reasons-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; max-width: 1100px; width: 100%; }
-        .reason-card {
-            background: rgba(255,255,255,0.85); padding: 35px 25px; border-radius: var(--radius);
-            box-shadow: var(--shadow); text-align: center; border: 1px solid var(--white); transition: 0.3s;
-        }
-        .reason-card:hover { transform: scale(1.05); background: var(--white); box-shadow: 0 20px 40px rgba(251, 111, 146, 0.2); }
-        .reason-card h3 { font-size: 2.2rem; margin-bottom: 15px; color: var(--pink-deep); }
-        .reason-card p { font-size: 1.15rem; }
+        /* ФОТО НА ПРИЩЕПКАХ (Гирлянда) */
+        .clothesline-wrapper { width: 100%; max-width: 1200px; margin: 50px auto; position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 40px 60px; padding-top: 20px;}
+        .clothesline-wrapper::before { content: ''; position: absolute; top: 20px; left: 5%; width: 90%; height: 2px; background: rgba(0,0,0,0.3); border-radius: 50%; box-shadow: 0 5px 10px rgba(0,0,0,0.1); z-index: 1;}
+        .hanging-item { position: relative; z-index: 2; transform-origin: top center; animation: swing 4s ease-in-out infinite alternate; }
+        .hanging-item:nth-child(2n) { animation-duration: 5s; animation-direction: alternate-reverse; }
+        .hanging-item:nth-child(3n) { animation-duration: 4.5s; }
+        .peg { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 12px; height: 35px; background: #d2b48c; border-radius: 4px; z-index: 10; box-shadow: 1px 2px 3px rgba(0,0,0,0.2); border-left: 1px solid #bda27e;}
+        .peg::after { content: ''; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; background: #8c7355; border-radius: 50%;}
+        @keyframes swing { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
 
-        /* --- БУДУЩЕЕ --- */
-        .future-content {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px);
-            padding: 60px; border-radius: var(--radius); max-width: 800px; text-align: center;
-            border: 1px solid var(--white); box-shadow: var(--shadow);
-        }
-        .future-content p { font-size: 1.6rem; margin-bottom: 30px; font-weight: 700; color: var(--text-main); }
-        .future-icons { font-size: 4rem; display: flex; justify-content: center; gap: 50px; text-shadow: 0 10px 20px rgba(201, 24, 74, 0.2); }
-        .icon { animation: float 3s ease-in-out infinite; }
-        .icon:nth-child(2) { animation-delay: 0.5s; }
-        .icon:nth-child(3) { animation-delay: 1s; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* КНОПКА ЗАЖМИ МЕНЯ */
+        .hold-section { text-align: center; margin-top: 20px; }
+        .hold-btn { position: relative; width: 150px; height: 150px; background: var(--white); border-radius: 50%; box-shadow: var(--shadow); border: 5px solid var(--pink-pastel); margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; color: var(--pink-dark); cursor: pointer; overflow: hidden; user-select: none; -webkit-touch-callout: none; transition: transform 0.2s;}
+        .hold-btn:active { transform: scale(0.95); }
+        .hold-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: var(--pink-main); z-index: 1; transition: height 0.1s linear;}
+        .hold-text { position: relative; z-index: 2; pointer-events: none; }
+        .pulse-anim { animation: pulseHeart 2s infinite; }
+        @keyframes pulseHeart { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 111, 146, 0.4); } 70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(251, 111, 146, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 111, 146, 0); } }
 
-        /* --- ЛЮБИМЫЕ МОМЕНТЫ --- */
-        .fav-moments-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 30px; max-width: 1200px; width: 100%; align-items: center; }
-        .fav-card { text-align: center; }
-        .fav-card.left-1 .polaroid { transform: rotate(-4deg); }
-        .fav-card.left-2 .polaroid { transform: rotate(3deg); margin-top: 20px;}
-        .fav-card.right-1 .polaroid { transform: rotate(4deg); }
-        .fav-card.right-2 .polaroid { transform: rotate(-3deg); margin-top: 20px;}
-        .fav-card .polaroid img { height: 180px; }
+        /* Карта и Пины */
+        .map-container { width: 100%; max-width: 900px; height: 450px; background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 3px dashed var(--pink-pastel); position: relative; background-image: radial-gradient(var(--pink-lightest) 2px, transparent 2px); background-size: 30px 30px; }
+        .map-pin { position: absolute; font-size: 2.5rem; cursor: pointer; transform: translate(-50%, -100%); transition: 0.3s; animation: float 3s ease-in-out infinite; text-decoration: none; display: block; z-index: 5; }
+        .map-pin:hover { transform: translate(-50%, -110%) scale(1.2); z-index: 20; }
         
-        .center-card { grid-column: 2; grid-row: 1 / 3; }
-        .center-card .polaroid { padding: 15px 15px 50px 15px; transform: rotate(0deg); border: 2px solid var(--pink-pastel);}
-        .center-card .polaroid img { height: 450px; }
-        .fav-caption { font-family: 'Dancing Script', cursive; font-size: 2rem; color: var(--pink-deep); margin-top: 15px; font-weight: 700; text-shadow: 1px 1px 2px rgba(201, 24, 74, 0.1);}
+        .tooltip { position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: var(--pink-deep); color: white; padding: 10px 15px; border-radius: 10px; font-size: 1rem; font-weight: 700; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 6px; border-style: solid; border-color: var(--pink-deep) transparent transparent transparent; }
+        .map-pin:hover .tooltip { opacity: 1; bottom: 130%; }
 
-        /* --- ФИНАЛ --- */
-        #final-card { justify-content: center; }
-        .final-btn {
-            background: var(--pink-dark); color: var(--white); border: none; padding: 20px 40px; font-size: 1.4rem;
-            font-weight: 700; border-radius: 40px; cursor: pointer; box-shadow: 0 10px 25px rgba(251, 111, 146, 0.4);
-            font-family: 'Quicksand', sans-serif; transition: 0.3s; max-width: 600px;
-        }
-        .final-btn:hover { background: var(--pink-deep); transform: scale(1.05); box-shadow: 0 15px 35px rgba(201, 24, 74, 0.5); }
+        .tooltip.down { bottom: auto; top: 110%; }
+        .tooltip.down::after { top: auto; bottom: 100%; border-color: transparent transparent var(--pink-deep) transparent; }
+        .map-pin:hover .tooltip.down { top: 130%; bottom: auto; opacity: 1; }
 
-        .postcard-wrapper { display: none; flex-direction: column; align-items: center; opacity: 0; transform: scale(0.8); transition: 1s ease-out; max-width: 800px; width: 100%;}
+        #everywhere-popup { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(89, 13, 34, 0.7); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.5s ease; }
+        #everywhere-popup.active { opacity: 1; pointer-events: all; }
+        .popup-card { background: var(--white); padding: 60px 40px; border-radius: 30px; text-align: center; max-width: 450px; transform: scale(0.7) translateY(50px); transition: 0.6s; box-shadow: 0 30px 60px rgba(201, 24, 74, 0.3); border: 4px solid var(--pink-pastel); }
+        #everywhere-popup.active .popup-card { transform: scale(1) translateY(0); }
+        .close-popup { position: absolute; top: 15px; right: 20px; font-size: 2.5rem; color: var(--pink-main); cursor: pointer; }
+
+        /* --- БИЛЕТ В БУДУЩЕЕ --- */
+        .ticket-wrapper { display: flex; justify-content: center; width: 100%; margin-top: 20px;}
+        .ticket { display: flex; background: var(--white); max-width: 700px; width: 100%; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .ticket::before, .ticket::after { content: ''; position: absolute; top: 50%; width: 40px; height: 40px; background: var(--bg-light); border-radius: 50%; transform: translateY(-50%); }
+        .ticket::before { left: -20px; box-shadow: inset -5px 0 10px rgba(0,0,0,0.05); }
+        .ticket::after { right: -20px; box-shadow: inset 5px 0 10px rgba(0,0,0,0.05); }
+        .ticket-left { flex: 3; padding: 40px; border-right: 3px dashed var(--pink-pastel); }
+        .ticket-left h3 { font-family: 'Quicksand', sans-serif; font-size: 1.2rem; color: var(--pink-pastel); text-align: left; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;}
+        .ticket-left h2 { font-family: 'Dancing Script', cursive; font-size: 2.8rem; color: var(--pink-deep); text-align: left; margin-bottom: 20px; text-shadow: none;}
+        .ticket-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .info-block span { display: block; font-size: 0.9rem; color: var(--pink-dark); text-transform: uppercase; font-weight: 700;}
+        .info-block strong { font-size: 1.3rem; color: var(--text-main); }
+        .ticket-right { flex: 1; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--pink-lightest);}
+        .barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 4rem; transform: rotate(-90deg); color: var(--text-main); }
+
+
+        /* Финальное письмо и Сердце */
+        .postcard-wrapper { display: none; flex-direction: column; align-items: center; opacity: 0; transform: scale(0.8); transition: 1s; max-width: 800px; width: 100%; }
         .postcard-wrapper.show { display: flex; opacity: 1; transform: scale(1); }
-
-        /* ОТКРЫТКА В СТИЛЕ БИЛЕТА (LOVE COUPON) */
-        .postcard {
-            background: var(--white); width: 100%; max-width: 500px; padding: 50px 40px;
-            box-shadow: 0 25px 50px rgba(201, 24, 74, 0.2); position: relative; text-align: center;
-            margin-bottom: 40px;
-            
-            /* CSS Маска для вырезов по бокам как у настоящего билета */
-            -webkit-mask-image: radial-gradient(circle at 0 50%, transparent 25px, black 26px), radial-gradient(circle at 100% 50%, transparent 25px, black 26px);
-            -webkit-mask-size: 51% 100%;
-            -webkit-mask-repeat: no-repeat;
-            -webkit-mask-position: left, right;
-        }
-        /* Внутренняя пунктирная линия билета */
-        .postcard::before { 
-            content: ''; position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px; 
-            border: 2px dashed var(--pink-pastel); pointer-events: none; 
-        }
+        .postcard { background: var(--white); width: 450px; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--pink-pastel); text-align: center; margin-bottom: 40px;}
         
-        .postcard-title { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: var(--text-main); margin-bottom: 10px; }
+        .css-heart { position: relative; width: 100px; height: 100px; margin: 50px auto; animation: heartbeat 1.5s infinite; }
+        @keyframes heartbeat { 0% { transform: scale(1); } 14% { transform: scale(1.15); } 28% { transform: scale(1); } 42% { transform: scale(1.15); } 70% { transform: scale(1); } 100% { transform: scale(1); } }
+        .css-heart-shape { position: absolute; width: 100px; height: 100px; background: var(--pink-deep); border-radius: 10px; transform: rotate(-45deg); box-shadow: 0 0 20px rgba(201, 24, 74, 0.4);}
+        .css-heart-shape::before, .css-heart-shape::after { content: ''; position: absolute; width: 100px; height: 100px; background: var(--pink-deep); border-radius: 50%; }
+        .css-heart-shape::before { top: -50px; left: 0; } .css-heart-shape::after { top: 0; left: 50px; }
         
-        /* Бьющееся сердце */
-        .css-heart { 
-            position: relative; width: 120px; height: 120px; margin: 60px auto; 
-            animation: heartbeat 1.5s infinite;
-        }
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.15); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.15); }
-            70% { transform: scale(1); }
-            100% { transform: scale(1); }
-        }
-        .css-heart-shape {
-            position: absolute; width: 120px; height: 120px; background: var(--pink-deep);
-            border-radius: 12px; box-shadow: 0 0 25px rgba(201, 24, 74, 0.5); transform: rotate(-45deg); 
-        }
-        .css-heart-shape::before, .css-heart-shape::after {
-            content: ''; position: absolute; width: 120px; height: 120px;
-            background: var(--pink-deep); border-radius: 50%;
-        }
-        .css-heart-shape::before { top: -60px; left: 0; }
-        .css-heart-shape::after { top: 0; left: 60px; }
-        
-        .heart-text {
-            position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
-            color: var(--white); font-family: 'Dancing Script', cursive;
-            font-size: 2.8rem; z-index: 2; width: 150px; text-align: center; pointer-events: none;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        .heart-text { 
+            position: absolute; top: 22px; left: 50%; transform: translateX(-50%); color: var(--white); 
+            font-family: 'Dancing Script', cursive; font-size: 1.5rem; line-height: 1.1; 
+            z-index: 2; width: 120px; text-align: center; pointer-events: none;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px var(--pink-lightest);
         }
 
-        .letter-text {
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
-            padding: 50px; border-radius: var(--radius);
-            box-shadow: var(--shadow); font-size: 1.4rem; text-align: left; border: 1px solid var(--white);
-        }
-        .letter-text p { margin-bottom: 20px; }
+        .letter-text { background: var(--white); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); font-size: 1.3rem; border: 3px solid var(--pink-lightest); min-height: 250px;}
 
         @media (max-width: 900px) {
-            .intro-content { flex-direction: column; padding: 30px; text-align: center; }
-            .intro-photo { transform: rotate(0); margin-top: 20px; }
-            .moments-container { flex-direction: column; }
-            .moment-wrapper:nth-child(n) .polaroid { transform: rotate(0); margin-top: 0; }
-            .reasons-grid { grid-template-columns: 1fr; }
-            .fav-moments-grid { grid-template-columns: 1fr; grid-template-areas: none; gap: 20px;}
-            .fav-card { grid-column: auto; grid-row: auto; }
-            .fav-card.left-1 .polaroid, .fav-card.left-2 .polaroid, .fav-card.right-1 .polaroid, .fav-card.right-2 .polaroid { transform: rotate(0); margin-top: 0;}
-            .center-card { order: -1; }
-            .center-card .polaroid img { height: 350px; }
-            h2 { font-size: 3.2rem; }
-            .postcard { padding: 40px 20px; } /* Адаптация билета под мобильные */
-            .letter-text { font-size: 1.2rem; padding: 30px; }
-            .envelope-wrapper { width: 300px; height: 200px; }
-            .envelope-left { border-left: 150px solid var(--pink-main); border-top: 100px solid transparent; border-bottom: 100px solid transparent;}
-            .envelope-right { border-right: 150px solid var(--pink-main); border-top: 100px solid transparent; border-bottom: 100px solid transparent;}
-            .envelope-front { border-bottom: 120px solid var(--pink-pastel); border-left: 150px solid transparent; border-right: 150px solid transparent;}
-            .envelope-flap { border-top: 120px solid var(--pink-dark); border-left: 150px solid transparent; border-right: 150px solid transparent;}
-            .wax-seal { top: 120px; }
+            .intro-content { flex-direction: column; text-align: center; }
+            .clothesline-wrapper::before { display: none; }
+            .hanging-item { animation: none; margin-bottom: 20px;}
+            .peg { display: none; }
+            .postcard { width: 100%; max-width: 350px; }
+            .pass-box { padding: 30px 20px; }
+            .pass-box h2 { font-size: 2.5rem; }
+            .map-container { height: 350px; }
+            #music-toggle-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 1.5rem;}
+            .ticket { flex-direction: column; }
+            .ticket-right { display: none; }
+            .ticket-left { border-right: none; padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Эффект Боке на фоне -->
-    <div class="bokeh bokeh-1"></div>
-    <div class="bokeh bokeh-2"></div>
-    <div class="bokeh bokeh-3"></div>
+    <!-- Прелоадер -->
+    <div id="preloader"><div class="css-heart"><div class="css-heart-shape"></div></div></div>
 
-    <!-- Фоновая музыка -->
-    <audio id="bg-music" loop>
-        <source src="music.mp3" type="audio/mpeg">
-    </audio>
+    <!-- ЭКРАН С ПАРОЛЕМ -->
+    <div id="password-screen">
+        <div class="pass-box">
+            <h2>Доступ закрыт 🔒</h2>
+            <p>Эта страничка только для одной прекрасной девушки. Введи дату нашего первого поцелуя (ДД.ММ.ГГГГ), чтобы войти:</p>
+            <input type="text" id="password-input" class="pass-input" placeholder="Например: 01.01.2024">
+            <button class="pass-btn" onclick="checkPassword()">Войти</button>
+            <div id="pass-error" class="pass-error">Неправильная дата, подумай еще! 💔</div>
+        </div>
+    </div>
 
-    <!-- Контейнер для падающих сердечек -->
+    <!-- Аудио плеер (скрытый) -->
+    <audio id="bg-music" loop><source src="music.mp3" type="audio/mpeg"></audio>
+
+    <!-- ПЛАВАЮЩАЯ КНОПКА МУЗЫКИ -->
+    <div id="music-toggle-btn" onclick="toggleMusic()">🎵</div>
+
+    <!-- Лайтбокс -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <span class="close-lightbox">&times;</span>
+        <img id="lightbox-img" src="" alt="Full screen image">
+    </div>
+
+    <!-- Попап Везде -->
+    <div id="everywhere-popup" onclick="closeEverywhere(event)">
+        <div class="popup-card" onclick="event.stopPropagation()">
+            <span class="close-popup" onclick="closeEverywhere(event)">&times;</span>
+            <h3>Везде... ❤️</h3>
+            <p>Нет такого места на земле, где бы я тебя не любил. Моя любовь к тебе повсюду!</p>
+        </div>
+    </div>
+
+    <!-- Сердечки -->
     <div id="hearts-container"></div>
 
-    <!-- Экран с конвертом -->
-    <div id="envelope-screen">
+    <!-- КОНВЕРТ -->
+    <div id="envelope-screen" style="visibility: hidden; opacity: 0;">
         <div class="envelope-wrapper" id="envelope">
-            <!-- Письмо-билет внутри конверта -->
             <div class="envelope-letter"><div class="envelope-letter-text">Для Яночки ❤️</div></div>
             <div class="envelope-left"></div><div class="envelope-right"></div><div class="envelope-front"></div>
             <div class="envelope-flap"></div><div class="wax-seal">❤</div>
@@ -389,170 +279,220 @@
             <div class="intro-text">
                 <span>Яночка,</span>
                 Любимая, мы встречаемся официально один месяц, но как будто намного дольше. Этот месяц был лучшим в моей жизни!
-                
-                <div class="time-counter">
-                    Мы вместе уже:
-                    <span id="timer-text">Считаю...</span>
-                    и это только начало ❤️
-                </div>
+                <div class="time-counter">Мы вместе уже:<span id="timer-text">Считаю...</span>и это только начало ❤️</div>
             </div>
-            <div class="intro-photo">
-                <div class="polaroid">
-                    <div class="polaroid-img-wrapper">
-                        <img src="images/1.jpg" alt="Мы вдвоём">
-                    </div>
-                </div>
-            </div>
+            <div class="intro-photo"><div class="polaroid"><img src="images/1.jpg" alt="Мы"></div></div>
         </div>
-        <a href="#photos-block" class="btn-down hidden-el">Листай ниже ↓</a>
+        <a href="#music-section" class="btn-down hidden-el">Листай ниже ↓</a>
     </section>
 
-    <!-- 2. Наши моменты -->
-    <section id="photos-block">
-        <h2 class="hidden-el">Наши моменты</h2>
-        <div class="moments-container">
-            <div class="moment-wrapper hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/2.jpg" alt="Наша прогулка"></div></div>
-                <div class="moment-text">
-                    <h3>Наша первая настоящая прогулка</h3>
-                    <p>Мы гуляли, разговаривали обо всём, и именно тогда я ещё сильнее почувствовал, насколько ты мне близка.</p>
-                </div>
-            </div>
-            <div class="moment-wrapper hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/3.jpg" alt="Наш вальс"></div></div>
-                <div class="moment-text">
-                    <h3>Вальс</h3>
-                    <p>Наш вальс очень нас с тобой сблизил, и я благодарен ему за то, что он подарил нам столько нежности и эмоций.</p>
-                </div>
-            </div>
-            <div class="moment-wrapper hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/4.jpg" alt="Наши приколы"></div></div>
-                <div class="moment-text">
-                    <h3>Наши приколы</h3>
-                    <p>Яночка, мне с тобой очень весело. Я обожаю наши шутки и моменты, когда мы просто смеёмся вдвоём. Я тебя люблю больше всех.</p>
-                </div>
-            </div>
+    <!-- 2. Наши песни (Spotify) -->
+    <section id="music-section">
+        <h2 class="hidden-el">Наши песни 🎵</h2>
+        <div class="spotify-grid hidden-el">
+            <div class="spotify-card"><iframe src="https://open.spotify.com/embed/track/5UW6yvwo3nVA609NgprdhK" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
+            <div class="spotify-card"><iframe src="https://open.spotify.com/embed/track/0qo1bS0wAwWnmrWkFkP64N" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
+            <div class="spotify-card"><iframe src="https://open.spotify.com/embed/track/4R2gBCHPr5fgRuDrCtBnxp" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
+            <div class="spotify-card"><iframe src="https://open.spotify.com/embed/track/4P9elmGGFrqOkBiqEjVT4i" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
+            <div class="spotify-card"><iframe src="https://open.spotify.com/embed/track/5pS5TjcUKb8rWQSqgZ2MSm" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
+            <div class="spotify-card"><iframe src="https://open.spotify.com/embed/track/31DoKPoVBMXfPcrlb44gF0" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>
         </div>
-        <a href="#love-reasons" class="btn-down hidden-el" style="margin-top: 50px;">Ниже ↓</a>
+        <a href="#map-section" class="btn-down hidden-el">Ниже ↓</a>
     </section>
 
-    <!-- 3. Причины любви -->
-    <section id="love-reasons">
-        <h2 class="hidden-el">За что я тебя люблю</h2>
-        <div class="reasons-grid">
-            <div class="reason-card hidden-el">
-                <h3>Твоя прекрасная улыбка</h3>
-                <p>Твоя улыбка умеет разгонять любые тучи. Когда ты улыбаешься, мир вокруг будто становится светлее.</p>
-            </div>
-            <div class="reason-card hidden-el">
-                <h3>Твои прекрасные глаза</h3>
-                <p>Яночка, я тебе ещё очень давно говорил, что твои глазки самые прекрасные, красивые и любимые. В них хочется смотреть бесконечно.</p>
-            </div>
-            <div class="reason-card hidden-el">
-                <h3>Твоя доброта</h3>
-                <p>Ты очень добрый человек, добрее тебя я не видел никого. Я безумно ценю твою способность поддержать, понять и пожалеть.</p>
-            </div>
-            <div class="reason-card hidden-el">
-                <h3>Твой смех</h3>
-                <p>У тебя самый красивый смех. Я хочу, чтобы ты смеялась и радовалась всегда, а я буду делать всё для этого.</p>
-            </div>
-            <div class="reason-card hidden-el">
-                <h3>Твои разговоры</h3>
-                <p>Янка, я тебя очень люблю за то, что ты всегда готова поговорить и поддержать меня. Ты умеешь слушать и понимать как никто другой.</p>
-            </div>
-            <div class="reason-card hidden-el">
-                <h3>За то, что ты есть</h3>
-                <p>Янка, я очень благодарен тому, что ты появилась в моей жизни. Я невероятно рад, что могу называть тебя своей.</p>
-            </div>
+    <!-- 3. Наши места -->
+    <section id="map-section">
+        <h2 class="hidden-el">Наши особенные места 🗺️</h2>
+        <div class="map-container hidden-el">
+            <a href="https://maps.app.goo.gl/uAVM9WLfqUJTKv326" target="_blank" class="map-pin" style="top: 25%; left: 15%;">📍<div class="tooltip down">Место знакомства</div></a>
+            <a href="https://maps.app.goo.gl/Nt98ovLCThxUWjPg7" target="_blank" class="map-pin" style="top: 30%; left: 65%;">💋<div class="tooltip down">Первый поцелуй</div></a>
+            <a href="https://maps.app.goo.gl/Rsjyu3qQR3XEBRan9" target="_blank" class="map-pin" style="top: 45%; left: 30%;">💖<div class="tooltip">Первое свидание</div></a>
+            <a href="https://maps.app.goo.gl/3KxMQ8twHcWSxaQ59" target="_blank" class="map-pin" style="top: 75%; left: 25%;">✨<div class="tooltip">Разговоры по душам</div></a>
+            <a href="https://maps.app.goo.gl/743jKU7jjujtKJhx7" target="_blank" class="map-pin" style="top: 65%; left: 80%;">🏡<div class="tooltip">Наш будущий дом</div></a>
+            <div class="map-pin special-pin" style="top: 50%; left: 50%;" onclick="openEverywhere()">🌎<div class="tooltip">Где я люблю тебя</div></div>
         </div>
         <a href="#future" class="btn-down hidden-el" style="margin-top: 50px;">Ниже ↓</a>
     </section>
 
-    <!-- 4. Что нас ждет -->
+    <!-- 4. Билет в будущее (ВЕРНУЛ) -->
     <section id="future">
         <h2 class="hidden-el">Что нас ещё ждёт?</h2>
-        <div class="future-content hidden-el">
-            <p>Янка, тут я даже и сказать не знаю что, нас ждёт с тобой очень много всего. Мы с тобой будем путешествовать и жить для себя в счастье, так что месяц — это малейшая часть нашего совместного пути.</p>
-            <div class="future-icons">
-                <span class="icon">✈️</span>
-                <span class="icon">💖</span>
-                <span class="icon">🏡</span>
+        <div class="ticket-wrapper hidden-el">
+            <div class="ticket">
+                <div class="ticket-left">
+                    <h3>Boarding Pass</h3>
+                    <h2>Счастливое будущее</h2>
+                    <div class="ticket-info">
+                        <div class="info-block">
+                            <span>Пассажиры:</span>
+                            <strong>Яна & Ян</strong>
+                        </div>
+                        <div class="info-block">
+                            <span>Пункт назначения:</span>
+                            <strong>Бесконечное счастье</strong>
+                        </div>
+                        <div class="info-block" style="grid-column: span 2; margin-top: 10px;">
+                            <span>Статус рейса:</span>
+                            <strong>Длится вечно, путешествуем и живем для себя ❤️</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="ticket-right">
+                    <div class="barcode">YANA AND YAN 1 MONTH</div>
+                </div>
             </div>
         </div>
-        <a href="#favorite-moments" class="btn-down hidden-el" style="margin-top: 50px;">Ниже ↓</a>
+        <a href="#photo-string" class="btn-down hidden-el" style="margin-top: 50px;">Ниже ↓</a>
     </section>
 
-    <!-- 5. Любимые моменты -->
-    <section id="favorite-moments">
-        <h2 class="hidden-el">Любимые моменты</h2>
-        <div class="fav-moments-grid">
-            <div class="fav-card left-1 hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/6.jpg" alt="До поцелуя"></div></div>
-                <div class="fav-caption">Это мы до нашего первого поцелуя</div>
+    <!-- 5. Фото на прищепках -->
+    <section id="photo-string">
+        <h2 class="hidden-el">Любимые моменты 📸</h2>
+        <div class="clothesline-wrapper hidden-el">
+            <div class="hanging-item">
+                <div class="peg"></div>
+                <div class="polaroid" style="transform: rotate(-3deg);"><img src="images/6.jpg" alt="До поцелуя"><div style="text-align:center; font-family:'Dancing Script'; font-size:1.5rem; margin-top:5px;">До первого поцелуя</div></div>
             </div>
-            <div class="fav-card left-2 hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/7.jpg" alt="Первое свидание"></div></div>
-                <div class="fav-caption">Это наше первое свидание</div>
+            <div class="hanging-item">
+                <div class="peg"></div>
+                <div class="polaroid" style="transform: rotate(2deg);"><img src="images/7.jpg" alt="Свидание"><div style="text-align:center; font-family:'Dancing Script'; font-size:1.5rem; margin-top:5px;">Первое свидание</div></div>
             </div>
-            
-            <div class="fav-card center-card hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/5.jpg" alt="Главный момент"></div></div>
-                <div class="fav-caption" style="font-size: 2.6rem; margin-top: 25px;">Особенный момент</div>
+            <div class="hanging-item">
+                <div class="peg"></div>
+                <div class="polaroid" style="transform: rotate(-1deg);"><img src="images/5.jpg" alt="Главный момент"><div style="text-align:center; font-family:'Dancing Script'; font-size:1.5rem; margin-top:5px; color:var(--pink-deep); font-weight:bold;">Особенный момент</div></div>
             </div>
-
-            <div class="fav-card right-1 hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/8.jpg" alt="Мы смешные"></div></div>
-                <div class="fav-caption">Это мы смешные</div>
+            <div class="hanging-item">
+                <div class="peg"></div>
+                <div class="polaroid" style="transform: rotate(4deg);"><img src="images/8.jpg" alt="Смешные"><div style="text-align:center; font-family:'Dancing Script'; font-size:1.5rem; margin-top:5px;">Мы смешные</div></div>
             </div>
-            <div class="fav-card right-2 hidden-el">
-                <div class="polaroid"><div class="polaroid-img-wrapper"><img src="images/9.jpg" alt="Просто мы"></div></div>
-                <div class="fav-caption">Это просто мы</div>
+            <div class="hanging-item">
+                <div class="peg"></div>
+                <div class="polaroid" style="transform: rotate(-2deg);"><img src="images/9.jpg" alt="Просто мы"><div style="text-align:center; font-family:'Dancing Script'; font-size:1.5rem; margin-top:5px;">Просто мы</div></div>
             </div>
         </div>
-        <a href="#final-card" class="btn-down hidden-el" style="margin-top: 50px;">Ниже ↓</a>
+        <a href="#coupons-section" class="btn-down hidden-el" style="margin-top: 50px;">Ниже ↓</a>
     </section>
 
-    <!-- 6. Финал -->
+    <!-- 6. Купоны-лотерея -->
+    <section id="coupons-section">
+        <h2 class="hidden-el">Сотри защитный слой 🎁</h2>
+        <p class="hidden-el" style="font-size:1.2rem; margin-bottom: 30px;">Потри карточку пальцем, чтобы получить подарок от меня!</p>
+        <div class="coupons-container hidden-el">
+            <div class="scratch-card">
+                <div class="scratch-content">Выполню одно<br>любое желание ✨</div>
+                <canvas class="scratch-canvas" id="scratch1"></canvas>
+            </div>
+            <div class="scratch-card">
+                <div class="scratch-content">Вечер кино<br>(ты выбираешь) 🎬</div>
+                <canvas class="scratch-canvas" id="scratch2"></canvas>
+            </div>
+            <div class="scratch-card">
+                <div class="scratch-content">100 поцелуев<br>без остановки 😘</div>
+                <canvas class="scratch-canvas" id="scratch3"></canvas>
+            </div>
+        </div>
+        <a href="#final-card" class="btn-down hidden-el">К самому главному ↓</a>
+    </section>
+
+    <!-- 7. Финал и Кнопка Холд -->
     <section id="final-card">
-        <button class="final-btn hidden-el" id="show-final-btn" onclick="showFinal()">Это моя малая часть слов, чтобы описать, насколько я тебя люблю</button>
+        <div class="hold-section hidden-el" id="hold-section">
+            <h3 style="margin-bottom: 20px; font-size: 2rem;">Заряди сердце любовью</h3>
+            <div class="hold-btn pulse-anim" id="hold-btn">
+                <div class="hold-fill" id="hold-fill"></div>
+                <div class="hold-text" id="hold-text">Зажми</div>
+            </div>
+            <p>Удерживай палец на кнопке до 100%</p>
+        </div>
         
         <div class="postcard-wrapper" id="postcard-content">
-            <!-- Эффект билета / купона на любовь -->
             <div class="postcard">
-                <div class="postcard-title">For yanik from yanik</div>
+                <div class="postcard-title">For Yanik from Yanik</div>
                 <div class="css-heart">
                     <div class="css-heart-shape"></div>
-                    <div class="heart-text">I love you</div>
+                    <div class="heart-text">I love<br>you</div>
                 </div>
-                <h3 style="font-size: 2.8rem; color: var(--pink-deep); margin-top: 20px;">Спасибо, что ты со мной.</h3>
+                <h3 style="font-size: 2.6rem; color: var(--pink-deep); margin-top: 20px;">Спасибо, что ты со мной.</h3>
             </div>
-            
             <div class="letter-text">
-                <p>Милая моя Янка,</p>
-                <p>Вот и пролетел наш первый совместный месяц. Кажется, что это совсем немного, но для меня это время стало по-настоящему особенным. Каждый день, проведённый с тобой, наполнен светом, радостью и смыслом.</p>
-                <p>Яночка, я хочу сказать тебе огромное спасибо за твою поддержку, за твои смешинки, за твою заботу и за то, какая ты чудесная. Это только начало нашей истории, и я безумно рад, что мы пишем её вместе.</p>
-                <p>Обещаю и дальше радовать тебя, оберегать и делать всё, чтобы твои глаза светились от счастья.</p>
+                <p id="type-p1"></p>
+                <p id="type-p2"></p>
+                <p id="type-p3"></p>
             </div>
         </div>
     </section>
 
     <script>
-        // --- 1. АНИМАЦИЯ КОНВЕРТА, МУЗЫКА И СЕРДЕЧКИ ---
+        // --- 0. ПРЕЛОАДЕР ---
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+            }, 1000); 
+        });
+
+        // --- 1. ПРОВЕРКА ПАРОЛЯ ---
+        function checkPassword() {
+            const input = document.getElementById('password-input').value.trim();
+            const errorText = document.getElementById('pass-error');
+            
+            if (input === '28.02.2026') {
+                document.getElementById('password-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('password-screen').style.display = 'none';
+                    const envScreen = document.getElementById('envelope-screen');
+                    envScreen.style.visibility = 'visible';
+                    envScreen.style.opacity = '1';
+                }, 1000);
+            } else {
+                errorText.style.opacity = '1';
+                errorText.classList.remove('shake');
+                void errorText.offsetWidth; 
+                errorText.classList.add('shake');
+            }
+        }
+
+        // --- УПРАВЛЕНИЕ МУЗЫКОЙ ---
+        const bgMusic = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-toggle-btn');
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicBtn.innerHTML = '🔇';
+                isMusicPlaying = false;
+            } else {
+                bgMusic.play();
+                musicBtn.innerHTML = '🎵';
+                isMusicPlaying = true;
+            }
+        }
+
+        // --- 2. ОТКРЫТИЕ КОНВЕРТА И СТАРТ МУЗЫКИ ---
         function openEnvelope() {
             const envelope = document.getElementById('envelope');
             const btn = document.getElementById('open-btn');
             const screen = document.getElementById('envelope-screen');
-            const bgMusic = document.getElementById('bg-music');
             
-            // Включаем музыку
-            bgMusic.volume = 0.5; // Громкость 50%
-            bgMusic.play().catch(e => console.log("Браузер заблокировал автоплей, нужен клик"));
+            bgMusic.volume = 0.5;
+            
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                musicBtn.innerHTML = '🎵';
+            }).catch(e => {
+                isMusicPlaying = false;
+                musicBtn.innerHTML = '🔇';
+                console.log("Браузер заблокировал автоплей. Пользователь включит музыку вручную.");
+            });
 
             envelope.classList.add('open');
             btn.style.opacity = '0';
             btn.style.pointerEvents = 'none';
 
-            // Через 2.8с убираем экран и запускаем магию
+            musicBtn.classList.add('visible');
+
             setTimeout(() => {
                 screen.style.opacity = '0';
                 setTimeout(() => {
@@ -564,11 +504,10 @@
             }, 2800);
         }
 
-        // --- 2. ПАДАЮЩИЕ СЕРДЕЧКИ ---
+        // --- 3. ПАДАЮЩИЕ СЕРДЕЧКИ ---
         function startFallingHearts() {
             const container = document.getElementById('hearts-container');
             container.style.display = 'block';
-            
             setInterval(() => {
                 const heart = document.createElement('div');
                 heart.classList.add('falling-heart');
@@ -578,51 +517,215 @@
                 heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
                 container.appendChild(heart);
                 setTimeout(() => { heart.remove(); }, 10000);
-            }, 400); 
+            }, 400);
         }
 
-        // --- 3. СЧЕТЧИК ОТНОШЕНИЙ ---
-        const startDate = new Date('2024-03-15T18:00:00').getTime(); 
-
+        // --- 4. СЧЕТЧИК ОТНОШЕНИЙ ---
+        const startDate = new Date('2026-02-28T19:47:00').getTime(); 
         function updateTimer() {
             const now = new Date().getTime();
             const diff = now - startDate;
-
+            if (diff < 0) { document.getElementById('timer-text').innerHTML = `Жду этого дня...`; return; }
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            document.getElementById('timer-text').innerHTML = 
-                `${days} дн, ${hours} ч, ${minutes} мин, ${seconds} сек`;
+            document.getElementById('timer-text').innerHTML = `${days} дн, ${hours} ч, ${minutes} мин, ${seconds} сек`;
         }
         setInterval(updateTimer, 1000);
-        updateTimer(); 
+        updateTimer();
 
-        // --- 4. ПЛАВНОЕ ПОЯВЛЕНИЕ БЛОКОВ ПРИ СКРОЛЛЕ ---
+        // --- 5. ПЛАВНОЕ ПОЯВЛЕНИЕ (OBSERVER) ---
         const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('show-el');
                     observer.unobserve(entry.target);
+                    if(entry.target.classList.contains('coupons-container')) {
+                        initScratchCards();
+                    }
                 }
             });
         }, observerOptions);
+        document.querySelectorAll('.hidden-el').forEach(el => observer.observe(el));
 
-        document.querySelectorAll('.hidden-el').forEach(el => {
-            observer.observe(el);
+        // --- 6. ЛАЙТБОКС (ГАЛЕРЕЯ) ---
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const images = document.querySelectorAll('.polaroid img');
+        images.forEach(img => {
+            img.parentElement.addEventListener('click', () => {
+                lightboxImg.src = img.src;
+                lightbox.classList.add('active');
+            });
         });
+        function closeLightbox() { lightbox.classList.remove('active'); }
 
-        // --- 5. ФИНАЛЬНАЯ КНОПКА ---
-        function showFinal() {
-            const btn = document.getElementById('show-final-btn');
-            const content = document.getElementById('postcard-content');
-            btn.style.display = 'none';
-            content.classList.add('show');
+        // --- 7. ПОПАП "ВЕЗДЕ" ---
+        function openEverywhere() { document.getElementById('everywhere-popup').classList.add('active'); }
+        function closeEverywhere(event) { if(event) event.stopPropagation(); document.getElementById('everywhere-popup').classList.remove('active'); }
+
+        // --- 8. ЛОТЕРЕЯ (СКРЕТЧ-КАРТЫ) ---
+        function initScratchCards() {
+            const canvases = document.querySelectorAll('.scratch-canvas');
+            canvases.forEach(canvas => {
+                if(canvas.dataset.initialized) return; 
+                canvas.dataset.initialized = "true";
+                
+                const ctx = canvas.getContext('2d');
+                canvas.width = canvas.parentElement.offsetWidth;
+                canvas.height = canvas.parentElement.offsetHeight;
+                
+                ctx.fillStyle = '#cccccc';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#999999';
+                ctx.font = '20px Quicksand';
+                ctx.textAlign = 'center';
+                ctx.fillText('Сотри меня', canvas.width/2, canvas.height/2 + 7);
+
+                let isDrawing = false;
+
+                function getMousePos(evt) {
+                    const rect = canvas.getBoundingClientRect();
+                    return {
+                        x: (evt.clientX || evt.touches[0].clientX) - rect.left,
+                        y: (evt.clientY || evt.touches[0].clientY) - rect.top
+                    };
+                }
+
+                function scratch(evt) {
+                    if (!isDrawing) return;
+                    evt.preventDefault();
+                    const pos = getMousePos(evt);
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                canvas.addEventListener('mousedown', () => isDrawing = true);
+                canvas.addEventListener('touchstart', () => isDrawing = true);
+                window.addEventListener('mouseup', () => isDrawing = false);
+                window.addEventListener('touchend', () => isDrawing = false);
+                canvas.addEventListener('mousemove', scratch);
+                canvas.addEventListener('touchmove', scratch, {passive: false});
+            });
+        }
+
+        // --- 9. КНОПКА ЗАЖМИ МЕНЯ И КОНФЕТТИ ---
+        const holdBtn = document.getElementById('hold-btn');
+        const holdFill = document.getElementById('hold-fill');
+        const holdText = document.getElementById('hold-text');
+        const holdSection = document.getElementById('hold-section');
+        let holdProgress = 0;
+        let holdInterval;
+        let isFinished = false;
+
+        function startHold(e) {
+            if(isFinished) return;
+            if(e) e.preventDefault();
+            holdBtn.classList.remove('pulse-anim');
+            holdInterval = setInterval(() => {
+                holdProgress += 2; 
+                holdFill.style.height = `${holdProgress}%`;
+                holdText.innerText = `${holdProgress}%`;
+                
+                if(navigator.vibrate && holdProgress % 10 === 0) navigator.vibrate(20);
+
+                if (holdProgress >= 100) {
+                    clearInterval(holdInterval);
+                    isFinished = true;
+                    holdText.innerText = "❤️";
+                    holdBtn.style.background = "var(--pink-main)";
+                    holdFill.style.display = "none";
+                    triggerConfetti();
+                    showFinalLetter(); 
+                }
+            }, 30);
+        }
+
+        function endHold() {
+            if(isFinished) return;
+            clearInterval(holdInterval);
+            holdProgress = 0;
+            holdFill.style.height = `0%`;
+            holdText.innerText = "Зажми";
+            holdBtn.classList.add('pulse-anim');
+        }
+
+        holdBtn.addEventListener('mousedown', startHold);
+        holdBtn.addEventListener('touchstart', startHold);
+        window.addEventListener('mouseup', endHold);
+        window.addEventListener('touchend', endHold);
+
+        function triggerConfetti() {
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff8fab', '#fb6f92', '#c9184a']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff8fab', '#fb6f92', '#c9184a']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        // --- 10. ФИНАЛЬНОЕ ПИСЬМО ---
+        const texts = [
+            "Милая моя Янка,",
+            "Вот и пролетел наш первый совместный месяц. Кажется, что это совсем немного, но для меня это время стало по-настоящему особенным. Каждый день, проведённый с тобой, наполнен светом, радостью и смыслом. Яночка, я хочу сказать тебе огромное спасибо за твою поддержку, за твои смешинки, за твою заботу и за то, какая ты чудесная.",
+            "Это только начало нашей истории, и я безумно рад, что мы пишем её вместе. Обещаю и дальше радовать тебя, оберегать и делать всё, чтобы твои глаза светились от счастья."
+        ];
+
+        function typeWriter(elementId, text, index, callback) {
+            const el = document.getElementById(elementId);
+            el.classList.add('typing-cursor');
+            function type() {
+                if (index < text.length) {
+                    el.innerHTML += text.charAt(index);
+                    index++;
+                    setTimeout(type, 30); 
+                } else {
+                    el.classList.remove('typing-cursor');
+                    if (callback) callback();
+                }
+            }
+            type();
+        }
+
+        function showFinalLetter() {
             setTimeout(() => {
+                holdSection.style.display = 'none';
+                const content = document.getElementById('postcard-content');
+                content.classList.add('show');
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }, 100);
+                
+                typeWriter('type-p1', texts[0], 0, () => {
+                    setTimeout(() => {
+                        typeWriter('type-p2', texts[1], 0, () => {
+                            setTimeout(() => {
+                                typeWriter('type-p3', texts[2], 0);
+                            }, 500);
+                        });
+                    }, 500);
+                });
+            }, 1000);
         }
     </script>
 </body>
